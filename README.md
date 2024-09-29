@@ -5,8 +5,10 @@ Official Implementation for H2O and OmniH2O:
 - [OmniH2O: Universal and Dexterous Human-to-Humanoid Whole-Body Teleoperation and Learning](https://human2humanoid.com/), CoRL 2024.
 
 
-<img src="./images/H2O.gif" alt="H2O">
-<img src="./images/OmniH2O.gif" alt="OmniH2O">
+<div style="display: flex; align-items: center;">
+    <img src="./images/H2O.gif" alt="H2O" style="margin-right: 10px;">
+    <img src="./images/OmniH2O.gif" alt="OmniH2O">
+</div>
 
 
 
