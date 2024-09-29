@@ -391,4 +391,15 @@ title = {{Teleopeation System using Apple Vision Pro}},
 url = {https://github.com/Improbable-AI/VisionProTeleop},
 version = {0.1.0}
 }
+
+@article{peng2018deepmimic,
+  title={Deepmimic: Example-guided deep reinforcement learning of physics-based character skills},
+  author={Peng, Xue Bin and Abbeel, Pieter and Levine, Sergey and Van de Panne, Michiel},
+  journal={ACM Transactions On Graphics (TOG)},
+  volume={37},
+  number={4},
+  pages={1--14},
+  year={2018},
+  publisher={ACM New York, NY, USA}
+}
 ```
