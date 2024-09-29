@@ -268,7 +268,7 @@ We use an 3-step process to retarget the AMASS dataset to specific humanoid embo
 
 ```
 cd human2humanoid
-python scripts/data_process/grad_fit_h15_shape.py
+python scripts/data_process/grad_fit_h1_shape.py
 ```
 
 And you should have 
@@ -284,11 +284,11 @@ And you should have
 
 ```
 cd human2humanoid
-python scripts/data_process/grad_fit_h15.py
+python scripts/data_process/grad_fit_h1.py
 ```
 You should have:
 ```
-(h2o) tairanhe@tairanhe-PRO-WS-WRX80E-SAGE-SE:~/Workspace/human2humanoid$ python scripts/data_process/grad_fit_h15.py
+(h2o) tairanhe@tairanhe-PRO-WS-WRX80E-SAGE-SE:~/Workspace/human2humanoid$ python scripts/data_process/grad_fit_h1.py
 Importing module 'gym_38' (/home/tairanhe/Workspace/isaacgym/isaacgym/python/isaacgym/_bindings/linux-x86_64/gym_38.so)
 Setting GYM_USD_PLUG_INFO_PATH to /home/tairanhe/Workspace/isaacgym/isaacgym/python/isaacgym/_bindings/linux-x86_64/usd/plugInfo.json
 2024-07-11 18:35:43,587 - INFO - logger - logger initialized
