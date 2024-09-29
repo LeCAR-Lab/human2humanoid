@@ -1,6 +1,6 @@
 <h1 align="center">Human to Humanoid</h1>
 
-Official Implementation for H2O and OmniH2O:
+Official Implementation for [H2O](https://human2humanoid.com/) and [OmniH2O](https://human2humanoid.com/):
 - [Learning Human-to-Humanoid Real-Time Whole-Body Teleoperation](https://human2humanoid.com/), IROS 2024.
 - [OmniH2O: Universal and Dexterous Human-to-Humanoid Whole-Body Teleoperation and Learning](https://human2humanoid.com/), CoRL 2024.
 
@@ -302,9 +302,9 @@ After this retargeting loop done, you should have your embodiment-specific datas
 Download motion file `amass_phc_filtered.pkl` [here](https://omni.human2humanoid.com/), and put it under `human2humanoid/legged_gym/resources/motions/h1/amass_phc_filtered.pkl`. Make sure your running command overwrites the default motion file by `motion.motion_file=resources/motions/h1/amass_phc_filtered.pkl`
 
 
-## Real-World Deployment
+# Real-World Deployment
 
-### System Overview
+## System Overview
 <p align="center">
   <img src="images/hardware.png" width="80%"/>
 </p>
@@ -315,7 +315,7 @@ Download motion file `amass_phc_filtered.pkl` [here](https://omni.human2humanoid
 - **Dexterous Hand**: [Inspire Hand](https://inspire-robots.store/collections/the-dexterous-hands?srsltid=AfmBOooJTL25MrQzRKIq5WQHDwr8ozIdlNQOdckJesxYqxeZ4uqj4Z4C)
 - **Wrist Motor**: [DM-J4310-2EC](https://github.com/dmBots/DM-J4310-2EC)
 
-### Deployment Code 
+## Deployment Code 
 
 - **Unitree H1**: [Unitree H1 SDK](https://github.com/unitreerobotics/unitree_sdk2)
 - **Inspire Hand**: [Inspire Hand (Unitree SDK)](hardware_code/inspire_hand.cpp)
