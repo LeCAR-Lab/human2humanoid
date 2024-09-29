@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="human">
+
+	<link name="human">
+		<inertial>
+			<mass value="10000"/>
+			<inertia  ixx="10000.0" ixy="0.00"  ixz="0.00" iyy="10000.0" iyz="0.00" izz="1600.0" />
+		</inertial>
+
+		<collision>
+			<origin xyz="0 0 -0.5" rpy="0 0 0"/>
+			<geometry>
+				<mesh filename="meshes/casual_female.dae" scale="1 1 1"/>
+			</geometry>
+			<sdf resolution="4"/>
+		</collision>
+<!-- 
+		<collision>
+			<origin xyz="0 0.15 0.0" rpy="0 -0.52 0"/>
+			<geometry>
+				<cylinder length="0.5" radius="0.06"/>
+			</geometry>
+		</collision>
+
+		<collision>
+			<origin xyz="0.15 0.15 -0.23" rpy="0 0 0"/>
+			<geometry>
+				<cylinder length="0.5" radius="0.04"/>
+			</geometry>
+		</collision>
+
+		<collision>
+			<origin xyz="-0.05 -0.1 0.05" rpy="0 -0.7 0"/>
+			<geometry>
+				<cylinder length="0.5" radius="0.06"/>
+			</geometry>
+		</collision>
+
+		<collision>
+		<origin xyz="-0.05 -0.1 -0.23" rpy="0 0.6 0"/>
+		<geometry>
+			<cylinder length="0.5" radius="0.04"/>
+		</geometry>
+		</collision>
+
+		<collision>
+		<origin xyz="0.18 0.15 -0.47" rpy="0 0 0"/>
+		<geometry>
+			<box size="0.27 0.08 0.04" />
+		</geometry>
+		</collision>
+
+		<collision>
+		<origin xyz="-0.15 -0.1 -0.43" rpy="0 0 0"/>
+		<geometry>
+			<box size="0.27 0.08 0.04" />
+		</geometry>
+		</collision> -->
+
+
+
+	</link>
+
+
+    
+</robot>

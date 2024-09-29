@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="cylinder">
+
+	<link name="cylinder">
+		<inertial>
+			<mass value="10000"/>
+			<!-- cylindrical shell : Izz=m*r^2; Ixx=Iyy=1/12*m*(6*r^2+h^2) -->
+			<!-- solid cylinder : Izz=(m*r^2)/2; Ixx=Iyy=1/12*m*(3*r^2+h^2) -->
+			<inertia  ixx="10000.0" ixy="0.00"  ixz="0.00" iyy="10000.0" iyz="0.00" izz="1600.0" />
+		</inertial>
+
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<cylinder length="1.0" radius="0.4"/>
+			</geometry>
+		</collision>
+	</link>
+    
+</robot>

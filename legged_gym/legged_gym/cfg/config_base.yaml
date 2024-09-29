@@ -1,0 +1,72 @@
+defaults:
+  - _self_
+  - asset: asset_base
+  - commands: commands_base
+  - control: control_base
+  - domain_rand: domain_rand_base
+  - env: env_base
+  - init_state: init_state_base
+  - motion: motion_base
+  - noise: noise_base
+  - normalization: normalization_base
+  - train: ppo_base
+  - rewards: rewards_base
+  - sim: sim_base
+  - terrain: terrain_base
+  - viewer: viewer_base
+
+
+project_name: "H1"
+notes: "Default Notes"
+exp_name: &exp_name humanoid_smpl
+headless: True
+seed: 0
+no_log: False
+test: False 
+sim_device: "cuda:0"
+rl_device: "cuda:0"
+sim_device_id: 0
+metadata: false
+play: ${test}
+train: True
+im_dump: False
+task: "h1:teleop"
+load_run: ""
+num_envs: 1024
+checkpoint: 0
+
+joystick: False
+tmp_freeze_upper: False
+max_iterations: 1000000
+horovod: False
+resume: False
+experiment_name: null
+run_name: null
+compute_device_id: 0
+graphics_device_id: 0
+flex: False
+
+use_gpu: True
+use_gpu_pipeline: True
+subscenes: 0
+slices: 0
+num_threads: 0
+
+
+####### Testing Configs. ########
+server_mode: False
+no_virtual_display: False
+render_o3d: False
+debug: False
+follow: False
+add_proj: False
+real_traj: False
+
+hydra:
+  job:
+    name: ${exp_name}
+    env_set:
+      OMP_NUM_THREADS: 1
+  run:
+    dir: output/h1/${exp_name}
+

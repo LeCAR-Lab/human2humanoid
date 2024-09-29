@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="tree">
+
+	<link name="tree">
+		<inertial>
+			<mass value="10000"/>
+			<inertia  ixx="10000.0" ixy="0.00"  ixz="0.00" iyy="10000.0" iyz="0.00" izz="1600.0" />
+		</inertial>
+		<collision>
+			<origin xyz="0 0 1.0" rpy="0 0 0"/>
+			<geometry>
+				<mesh filename="meshes/oak_tree.dae" scale="0.07 0.07 0.07"/>
+			</geometry>
+			<sdf resolution="4"/>
+		</collision>
+		<collision>
+			<origin xyz="0 0 -0.39" rpy="0 0 0"/>
+			<geometry>
+				<cylinder length="0.2" radius="0.4"/>
+			</geometry>
+		</collision>
+		<collision>
+			<origin xyz="0 0 -0.15" rpy="0 0 0"/>
+			<geometry>
+				<cylinder length="0.3" radius="0.25"/>
+			</geometry>
+		</collision>
+		<collision>
+			<origin xyz="0 0 0.5" rpy="0 0 0"/>
+			<geometry>
+				<cylinder length="1.0" radius="0.15"/>
+			</geometry>
+		</collision>
+	</link>
+    
+</robot>

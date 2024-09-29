@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="cone">
+
+	<link name="cone">
+		<inertial>
+			<mass value="10000"/>
+			<inertia  ixx="10000.0" ixy="0.00"  ixz="0.00" iyy="10000.0" iyz="0.00" izz="1600.0" />
+		</inertial>
+
+		<collision>
+			<origin xyz="0 0 -0.5" rpy="1.57 0 0"/>
+			<geometry>
+				<mesh filename="meshes/construction_cone.dae" scale="1 1 1.0"/>
+			</geometry>
+		</collision>
+	</link>
+    
+</robot>
