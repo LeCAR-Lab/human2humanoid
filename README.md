@@ -1,8 +1,8 @@
 <h1 align="center">Human to Humanoid</h1>
 
-Official Implementation for [H2O](https://human2humanoid.com/) and [OmniH2O](https://human2humanoid.com/):
+Official Implementation for [H2O](https://human2humanoid.com/) and [OmniH2O](https://omni.human2humanoid.com/):
 - [Learning Human-to-Humanoid Real-Time Whole-Body Teleoperation](https://human2humanoid.com/), IROS 2024.
-- [OmniH2O: Universal and Dexterous Human-to-Humanoid Whole-Body Teleoperation and Learning](https://human2humanoid.com/), CoRL 2024.
+- [OmniH2O: Universal and Dexterous Human-to-Humanoid Whole-Body Teleoperation and Learning](https://omni.human2humanoid.com/), CoRL 2024.
 
 
 <div style="display: flex; align-items: center;">
