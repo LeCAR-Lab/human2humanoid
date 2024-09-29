@@ -322,6 +322,7 @@ Download motion file `amass_phc_filtered.pkl` [here](https://omni.human2humanoid
 - **Wrist Motor**: [Damiao c++ controller](hardware_code/damiao_wrist.cpp)
 - **Vision Pro**: Please refer to [VisionProTeleop](https://github.com/Improbable-AI/VisionProTeleop) and [OpenTelevision](https://github.com/OpenTeleVision/TeleVision)
 - **RGB Pose Estimation**: Please refer to [HybrIK](https://github.com/Jeff-sjtu/HybrIK)
+- **Diffusion Policy**: Please refer to [Diffusion Policy](https://github.com/real-stanford/diffusion_policy) and [HATO](https://github.com/toruowo/hato)
 
 
 # Trouble Shooting
@@ -401,5 +402,13 @@ version = {0.1.0}
   pages={1--14},
   year={2018},
   publisher={ACM New York, NY, USA}
+}
+
+
+@article{lin2024learning,
+   author={Lin, Toru and Zhang, Yu and Li, Qiyang and Qi, Haozhi and Yi, Brent and Levine, Sergey and Malik, Jitendra},
+   title={Learning Visuotactile Skills with Two Multifingered Hands},
+   journal={arXiv:2404.16823},
+   year={2024}
 }
 ```
