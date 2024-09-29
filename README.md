@@ -275,7 +275,7 @@ And you should have
 ```
 |-- human2humanoid
    |-- data
-      |-- h1_5
+      |-- h1
          |-- shape_optimized_v1.pkl 
 ```
 
