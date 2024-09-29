@@ -5,6 +5,10 @@ Official Implementation for H2O and OmniH2O:
 - [OmniH2O: Universal and Dexterous Human-to-Humanoid Whole-Body Teleoperation and Learning](https://human2humanoid.com/), CoRL 2024.
 
 
+<img src="../../Downloads/H2O.gif" alt="H2O">
+<img src="../../Downloads/OmniH2O.gif" alt="OmniH2O">
+
+
 
 
 This codebase is under [CC BY-NC 4.0 license](https://creativecommons.org/licenses/by-nc/4.0/deed.en), with inherited license in [Legged Gym](training/legged_gym) and [RSL RL](training/rsl_rl) from *ETH Zurich, Nikita Rudin* and *NVIDIA CORPORATION & AFFILIATES*. You **may not use the material for commercial purposes**, e.g., to make demos to advertise your commercial products.
