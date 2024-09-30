@@ -323,6 +323,7 @@ Download motion file `amass_phc_filtered.pkl` [here](https://omni.human2humanoid
 - **Vision Pro**: Please refer to [VisionProTeleop](https://github.com/Improbable-AI/VisionProTeleop) and [OpenTelevision](https://github.com/OpenTeleVision/TeleVision)
 - **RGB Pose Estimation**: Please refer to [HybrIK](https://github.com/Jeff-sjtu/HybrIK)
 - **Diffusion Policy**: Please refer to [Diffusion Policy](https://github.com/real-stanford/diffusion_policy) and [HATO](https://github.com/toruowo/hato)
+- **Odometry**: [ZED mini SDK](hardware_code/zed_odometry.py)
 
 
 # Trouble Shooting
