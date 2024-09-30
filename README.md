@@ -299,7 +299,7 @@ After this retargeting loop done, you should have your embodiment-specific datas
 
 
 ### Downloading Full retargeted motion dataset after feasibility filter: 
-Download motion file `amass_phc_filtered.pkl` [here](https://omni.human2humanoid.com/), and put it under `human2humanoid/legged_gym/resources/motions/h1/amass_phc_filtered.pkl`. Make sure your running command overwrites the default motion file by `motion.motion_file=resources/motions/h1/amass_phc_filtered.pkl`
+Download motion file `amass_phc_filtered.pkl` [here](https://cmu.box.com/s/vfi619ox7lwf2hzzi710p3g2l59aeczv), and put it under `human2humanoid/legged_gym/resources/motions/h1/amass_phc_filtered.pkl`. Make sure your running command overwrites the default motion file by `motion.motion_file=resources/motions/h1/amass_phc_filtered.pkl`
 
 
 # Real-World Deployment
