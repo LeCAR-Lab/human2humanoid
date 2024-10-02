@@ -72,12 +72,7 @@ smpl_joint_pick_idx = [SMPL_BONE_ORDER_NAMES.index(j) for j in smpl_joint_pick]
 smpl_parser_n = SMPL_Parser(model_path="data/smpl", gender="neutral")
 smpl_parser_n.to(device)
 
-amass_data = joblib.load('/hdd/zen/data/ActBound/AMASS/amass_copycat_take6_train.pkl')
-locomotion_data = joblib.load("/hdd/zen/dev/meta/EgoQuest/data/amass/pkls/amass_isaac_simple_run_upright_slim.pkl")
-import ipdb; ipdb.set_trace()
-amass_data = {k:v for k, v in amass_data.items() if k in locomotion_data.keys()}
-# amass_data = joblib.load('/hdd/zen/data/ActBound/AMASS/amass_copycat_take6_test.pkl')
-
+amass_data = joblib.load('amass_copycat_take6_train.pkl') # From PHC
 shape_new = joblib.load("data/h1/shape_optimized_v1.pkl").to(device)
 
 
