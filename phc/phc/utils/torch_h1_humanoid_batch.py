@@ -4,7 +4,7 @@ import phc.utils.rotation_conversions as tRot
 import xml.etree.ElementTree as ETree
 from easydict import EasyDict
 import scipy.ndimage.filters as filters
-import poselib.core.rotation3d as pRot
+import smpl_sim.poselib.core.rotation3d as pRot
 
 H1_ROTATION_AXIS = torch.tensor([[
     [0, 0, 1], # l_hip_yaw

@@ -6,7 +6,7 @@ import os.path as osp
 sys.path.append(os.getcwd())
 
 from phc.utils import torch_utils
-from poselib.skeleton.skeleton3d import SkeletonTree, SkeletonMotion, SkeletonState
+from smpl_sim.poselib.skeleton.skeleton3d import SkeletonTree, SkeletonMotion, SkeletonState
 from scipy.spatial.transform import Rotation as sRot
 import numpy as np
 import torch
@@ -27,34 +27,11 @@ from tqdm.notebook import tqdm
 from smpl_sim.smpllib.smpl_joint_names import SMPL_MUJOCO_NAMES, SMPL_BONE_ORDER_NAMES, SMPLH_BONE_ORDER_NAMES, SMPLH_MUJOCO_NAMES
 from phc.utils.torch_h1_humanoid_batch import Humanoid_Batch, H1_ROTATION_AXIS
 
-h1_joint_names = ['pelvis',
- 'left_hip_yaw_link',
- 'left_hip_pitch_link',
- 'left_hip_roll_link',
- 'left_knee_link',
- 'left_ankle_pitch_link',
- 'left_ankle_roll_link',
- 'right_hip_yaw_link',
- 'right_hip_pitch_link',
- 'right_hip_roll_link',
- 'right_knee_link',
- 'right_ankle_pitch_link',
- 'right_ankle_roll_link',
- 'torso_link',
- 'left_shoulder_pitch_link',
- 'left_shoulder_roll_link',
- 'left_shoulder_yaw_link',
- 'left_elbow_pitch_link',
- 'left_elbow_roll_link',
- 'left_wrist_pitch_link',
- 'left_wrist_yaw_link',
- 'right_shoulder_pitch_link',
- 'right_shoulder_roll_link',
- 'right_shoulder_yaw_link',
- 'right_elbow_pitch_link',
- 'right_elbow_roll_link',
- 'right_wrist_pitch_link',
- 'right_wrist_yaw_link']
+h1_joint_names = [ 'pelvis', 
+                   'left_hip_yaw_link', 'left_hip_roll_link','left_hip_pitch_link', 'left_knee_link', 'left_ankle_link',
+                   'right_hip_yaw_link', 'right_hip_roll_link', 'right_hip_pitch_link', 'right_knee_link', 'right_ankle_link',
+                   'torso_link', 'left_shoulder_pitch_link', 'left_shoulder_roll_link', 'left_shoulder_yaw_link', 'left_elbow_link', 
+                  'right_shoulder_pitch_link', 'right_shoulder_roll_link', 'right_shoulder_yaw_link', 'right_elbow_link']
 
 
 h1_fk = Humanoid_Batch(extend_head=True) # load forward kinematics model
@@ -71,7 +48,7 @@ device = torch.device("cpu")
 pose_aa_h1 = np.repeat(np.repeat(sRot.identity().as_rotvec()[None, None, None, ], 22, axis = 2), 1, axis = 1)
 pose_aa_h1 = torch.from_numpy(pose_aa_h1).float()
 
-dof_pos = torch.zeros((1, 27))
+dof_pos = torch.zeros((1, 19))
 pose_aa_h1 = torch.cat([torch.zeros((1, 1, 3)), H1_ROTATION_AXIS * dof_pos[..., None], torch.zeros((1, 2, 3))], axis = 1)
 
 
@@ -117,5 +94,7 @@ for iteration in range(1000):
     optimizer_shape.zero_grad()
     loss.backward()
     optimizer_shape.step()
-import ipdb; ipdb.set_trace()
+
+os.makedirs("data/h1", exist_ok=True)
 joblib.dump((shape_new.detach(), scale), "data/h1/shape_optimized_v1.pkl") # V2 has hip jointsrea
+print(f"shape fitted and saved to data/h1/shape_optimized_v1.pkl")

@@ -787,8 +787,8 @@ class HumanoidAMP(Humanoid):
 
     def _hack_output_motion(self):
         fps = 1.0 / self.dt
-        from poselib.poselib.skeleton.skeleton3d import SkeletonMotion, SkeletonState
-        from poselib.poselib.visualization.common import plot_skeleton_motion_interactive
+        from smpl_sim.poselib.skeleton.skeleton3d import SkeletonMotion, SkeletonState
+        from smpl_sim.poselib.visualization.common import plot_skeleton_motion_interactive
 
         if (not hasattr(self, '_output_motion_root_pos')):
             self._output_motion_root_pos = []

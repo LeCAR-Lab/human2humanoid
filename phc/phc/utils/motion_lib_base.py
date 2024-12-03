@@ -14,7 +14,7 @@ from tqdm import tqdm
 from phc.utils import torch_utils
 import joblib
 import torch
-from poselib.skeleton.skeleton3d import SkeletonMotion, SkeletonState
+from smpl_sim.poselib.skeleton.skeleton3d import SkeletonMotion, SkeletonState
 import torch.multiprocessing as mp
 import gc
 from scipy.spatial.transform import Rotation as sRot

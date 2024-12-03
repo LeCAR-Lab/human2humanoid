@@ -10,6 +10,7 @@ notebooks/
 output/
 legged_gym/output/
 *.out
+data/
 
 *.egg-info/
 __pycache__/

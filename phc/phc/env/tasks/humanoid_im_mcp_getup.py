@@ -17,7 +17,7 @@ from isaacgym.torch_utils import *
 from phc.utils.flags import flags
 import joblib
 import gc
-from poselib.poselib.skeleton.skeleton3d import SkeletonMotion, SkeletonState
+from smpl_sim.poselib.skeleton.skeleton3d import SkeletonMotion, SkeletonState
 from rl_games.algos_torch import torch_ext
 import torch.nn as nn
 from phc.learning.network_loader import load_mcp_mlp, load_pnn

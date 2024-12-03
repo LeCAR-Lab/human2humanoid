@@ -186,6 +186,8 @@ Please read through the whole README.md before cloning the repo.
 
 # Motion Retargeting
 
+[This is a legacy motion retargeting pipeline, we will update it soon.]
+
 ## AMASS Dataset Preparation
 Download [AMASS Dataset](https://amass.is.tue.mpg.de/index.html) with `SMPL + H G` format and put it under `human2humanoid/data/AMASS/AMASS_Complete/`:
 ```
@@ -296,6 +298,12 @@ Setting GYM_USD_PLUG_INFO_PATH to /home/tairanhe/Workspace/isaacgym/isaacgym/pyt
 0-AMASS_Complete_MPI_Limits_03101_ulr1b_poses Iter: 0    256.983:   0%|                                                                                                                                                             | 0/15886 [00:01<?, ?it/s
 ```
 After this retargeting loop done, you should have your embodiment-specific dataset ready.
+
+To visualize the retargeted motion, you can run:
+
+```
+python scripts/vis/vis_motion.py
+```
 
 
 ### Downloading Full retargeted motion dataset after feasibility filter: 

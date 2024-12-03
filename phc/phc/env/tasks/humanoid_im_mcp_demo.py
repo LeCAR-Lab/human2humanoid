@@ -19,7 +19,7 @@ import gc
 from collections import defaultdict
 from scipy.spatial.transform import Rotation as sRot
 import phc.utils.pytorch3d_transforms as ptr
-from poselib.poselib.skeleton.skeleton3d import SkeletonMotion, SkeletonState
+from smpl_sim.poselib.skeleton.skeleton3d import SkeletonMotion, SkeletonState
 
 import aiohttp, cv2, asyncio, json
 import requests

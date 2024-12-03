@@ -26,7 +26,7 @@ from .lpf import ActionFilterButter, ActionFilterExp, ActionFilterButterTorch
 
 from phc.utils.motion_lib_h1 import MotionLibH1
 from phc.learning.network_loader import load_mcp_mlp
-from poselib.skeleton.skeleton3d import SkeletonTree
+from smpl_sim.poselib.skeleton.skeleton3d import SkeletonTree
 from termcolor import colored
 from rl_games.algos_torch import torch_ext
 from rsl_rl.modules import VelocityEstimator, VelocityEstimatorGRU
