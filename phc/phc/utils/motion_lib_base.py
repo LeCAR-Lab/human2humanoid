@@ -154,7 +154,7 @@ class MotionLibBase():
         
         self._num_unique_motions = len(self._motion_data_list)
         if self.mode == MotionlibMode.directory:
-            import ipdb; ipdb.set_trace()
+            # import ipdb; ipdb.set_trace()
             self._motion_data_load = joblib.load(self._motion_data_load[0]) # set self._motion_data_load to a sample of the data 
 
     def setup_constants(self, fix_height = FixHeightMode.full_fix, masterfoot_conifg=None, multi_thread = True):
