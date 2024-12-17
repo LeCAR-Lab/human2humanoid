@@ -186,7 +186,6 @@ Please read through the whole README.md before cloning the repo.
 
 # Motion Retargeting
 
-[This is a legacy motion retargeting pipeline, we will update it soon.]
 
 ## AMASS Dataset Preparation
 Download [AMASS Dataset](https://amass.is.tue.mpg.de/index.html) with `SMPL + H G` format and put it under `human2humanoid/data/AMASS/AMASS_Complete/`:
