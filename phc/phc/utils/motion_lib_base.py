@@ -113,10 +113,10 @@ class MotionlibMode(Enum):
     
 class MotionLibBase():
 
-    def __init__(self, motion_file,  device, fix_height=FixHeightMode.full_fix, masterfoot_conifg=None, min_length=-1, im_eval=False, multi_thread=True):
+    def __init__(self, motion_file,  device, fix_height=FixHeightMode.full_fix, masterfoot_conifg=None, min_length=-1, im_eval=False, multi_thread=True, sim_timestep = 1/50):
         self._device = device
         self.mesh_parsers = None
-        
+        self._sim_fps = np.ceil(1/sim_timestep)
         self.load_data(motion_file,  min_length = min_length, im_eval = im_eval)
         self.setup_constants(fix_height = fix_height, masterfoot_conifg = masterfoot_conifg, multi_thread = multi_thread)
 
@@ -432,9 +432,9 @@ class MotionLibBase():
 
     def get_motion_num_steps(self, motion_ids=None):
         if motion_ids is None:
-            return (self._motion_num_frames * 30 / self._motion_fps).int()
+            return (self._motion_num_frames * self._sim_fps / self._motion_fps).ceil().int()
         else:
-            return (self._motion_num_frames[motion_ids] * 30 / self._motion_fps).int()
+            return (self._motion_num_frames[motion_ids] * self._sim_fps / self._motion_fps).ceil().int()
 
     def get_motion_state(self, motion_ids, motion_times, offset=None):
         n = len(motion_ids)
