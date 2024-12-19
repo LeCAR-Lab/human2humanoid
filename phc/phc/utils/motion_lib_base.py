@@ -116,7 +116,7 @@ class MotionLibBase():
     def __init__(self, motion_file,  device, fix_height=FixHeightMode.full_fix, masterfoot_conifg=None, min_length=-1, im_eval=False, multi_thread=True, sim_timestep = 1/50):
         self._device = device
         self.mesh_parsers = None
-        self._sim_fps = np.ceil(1/sim_timestep)
+        self._sim_fps = 1/sim_timestep
         self.load_data(motion_file,  min_length = min_length, im_eval = im_eval)
         self.setup_constants(fix_height = fix_height, masterfoot_conifg = masterfoot_conifg, multi_thread = multi_thread)
 
