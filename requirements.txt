@@ -38,7 +38,6 @@ rich
 pynput
 -e rsl_rl
 -e legged_gym
--e poselib
 -e phc
 onnxruntime==1.13.1
 onnx==1.13.1
