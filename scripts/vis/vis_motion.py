@@ -52,7 +52,8 @@ asset_descriptors = [
 ]
 sk_tree = SkeletonTree.from_mjcf(h1_xml)
 
-motion_file = "data/h1/test.pkl"
+# motion_file = "data/h1/test.pkl"
+motion_file = "data/h1/amass_sfu.pkl"
 if os.path.exists(motion_file):
     print(f"loading {motion_file}")
 else:
@@ -173,10 +174,10 @@ gym.prepare_sim(sim)
 
 device = (torch.device("cuda", index=0) if torch.cuda.is_available() else torch.device("cpu"))
 
-motion_lib = MotionLibH1(motion_file=motion_file, device=device, masterfoot_conifg=None, fix_height=False, multi_thread=False, mjcf_file=h1_xml)
-num_motions = 1
+motion_lib = MotionLibH1(motion_file=motion_file, device=device, masterfoot_conifg=None, fix_height=False, multi_thread=False, mjcf_file=h1_xml) 
+num_motions = motion_lib._num_unique_motions # 加载pkl文件中全部的motion数量
 curr_start = 0
-motion_lib.load_motions(skeleton_trees=[sk_tree] * num_motions, gender_betas=[torch.zeros(17)] * num_motions, limb_weights=[np.zeros(10)] * num_motions, random_sample=False)
+motion_lib.load_motions(skeleton_trees=[sk_tree] * num_motions, gender_betas=[torch.zeros(17)] * num_motions, limb_weights=[np.zeros(10)] * num_motions, random_sample=True) # 随机采样
 motion_keys = motion_lib.curr_motion_keys
 
 current_dof = 0
@@ -340,7 +341,7 @@ while not gym.query_viewer_has_closed(viewer):
             print(motion_acc)
         elif evt.action == "next_batch" and evt.value > 0:
             curr_start += num_motions
-            motion_lib.load_motions(skeleton_trees=[sk_tree] * num_motions, gender_betas=[torch.zeros(17)] * num_motions, limb_weights=[np.zeros(10)] * num_motions, random_sample=False, start_idx=curr_start)
+            motion_lib.load_motions(skeleton_trees=[sk_tree] * num_motions, gender_betas=[torch.zeros(17)] * num_motions, limb_weights=[np.zeros(10)] * num_motions, random_sample=True, start_idx=curr_start)
             motion_keys = motion_lib.curr_motion_keys
             print(f"Next batch {curr_start}")
 

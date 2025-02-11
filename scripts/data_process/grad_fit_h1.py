@@ -31,7 +31,8 @@ def load_amass_data(data_path):
 
 
     root_trans = entry_data['trans']
-    pose_aa = np.concatenate([entry_data['poses'][:, :66], np.zeros((root_trans.shape[0], 6))], axis = -1)
+    #todo:待查证各个维度是什么 poses数据的维度是(N, 156)，N是帧数，156=3个根关节的全局旋转轴角值+63个轴角值（21个关节）+左手（45个轴角，15个关节）+右手（45）+颌骨（3）+左眼（3）+右眼（3）
+    pose_aa = np.concatenate([entry_data['poses'][:, :66], np.zeros((root_trans.shape[0], 6))], axis = -1) # 66 + 6 = 72，共24个关节，每个关节3个自由度
     betas = entry_data['betas']
     gender = entry_data['gender']
     N = pose_aa.shape[0]
@@ -46,7 +47,7 @@ def load_amass_data(data_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--amass_root", type=str, default="/hdd/zen/data/ActBound/AMASS/AMASS_Complete")
+    parser.add_argument("--amass_root", type=str, default="/home/zgy/robotic/human2humanoid/data/AMASS/AMASS_Complete/SFU") # AMASS数据集的路径
     args = parser.parse_args()
     
     device = torch.device("cpu")
@@ -114,31 +115,36 @@ if __name__ == "__main__":
     pbar = tqdm(key_name_to_pkls.keys())
     for data_key in pbar:
         amass_data = load_amass_data(key_name_to_pkls[data_key])
-        skip = int(amass_data['fps']//30)
-        trans = torch.from_numpy(amass_data['trans'][::skip]).float().to(device)
+        skip = int(amass_data['fps']//30) # 降采样到30fps
+        trans = torch.from_numpy(amass_data['trans'][::skip]).float().to(device) # 降采样，一共30帧
         N = trans.shape[0]
+        # amass_data['pose_aa']的维度是(N, 72)，N是帧数，本来就是在load_amass_data就是66+6个0了，不需要切片再加0了
         pose_aa_walk = torch.from_numpy(np.concatenate((amass_data['pose_aa'][::skip, :66], np.zeros((N, 6))), axis = -1)).float().to(device)
 
-
+        # joint.shape (N, 24, 3)
         verts, joints = smpl_parser_n.get_joints_verts(pose_aa_walk, torch.zeros((1, 10)).to(device), trans)
         offset = joints[:, 0] - trans
         root_trans_offset = trans + offset
 
-        pose_aa_h1 = np.repeat(np.repeat(sRot.identity().as_rotvec()[None, None, None, ], 22, axis = 2), N, axis = 1)
+        pose_aa_h1 = np.repeat(np.repeat(sRot.identity().as_rotvec()[None, None, None, ], 22, axis = 2), N, axis = 1) # shape:[1,N,22,3]
         pose_aa_h1[..., 0, :] = (sRot.from_rotvec(pose_aa_walk.cpu().numpy()[:, :3]) * sRot.from_quat([0.5, 0.5, 0.5, 0.5]).inv()).as_rotvec()
         pose_aa_h1 = torch.from_numpy(pose_aa_h1).float().to(device)
+        # 调整根关节的旋转
         gt_root_rot = torch.from_numpy((sRot.from_rotvec(pose_aa_walk.cpu().numpy()[:, :3]) * sRot.from_quat([0.5, 0.5, 0.5, 0.5]).inv()).as_rotvec()).float().to(device)
 
         dof_pos = torch.zeros((1, N, 19, 1)).to(device)
 
-        dof_pos_new = Variable(dof_pos, requires_grad=True)
+        # 通过梯度下降方法来优化 H1 模型的关节角度（dof_pos_new），使得 H1 模型的关节位置与 SMPL 模型的关节位置对齐
+        dof_pos_new = Variable(dof_pos, requires_grad=True) # 优化的变量
         optimizer_pose = torch.optim.Adadelta([dof_pos_new],lr=100)
 
         for iteration in range(500):
             verts, joints = smpl_parser_n.get_joints_verts(pose_aa_walk, shape_new, trans)
+            # 拼接pose_aa_h1_new，shape:[1,N,1+19+2,3] 因为有手，所以是最后+2，前面加1是因为根关节的全局旋转轴角值
             pose_aa_h1_new = torch.cat([gt_root_rot[None, :, None], h1_rotation_axis * dof_pos_new, torch.zeros((1, N, 2, 3)).to(device)], axis = 2).to(device)
             fk_return = h1_fk.fk_batch(pose_aa_h1_new, root_trans_offset[None, ])
             
+            # fk_return['global_translation_extend'].shape:[1,N,22,3] joints.shape:[N,24,3]
             diff = fk_return['global_translation_extend'][:, :, h1_joint_pick_idx] - joints[:, smpl_joint_pick_idx]
             loss_g = diff.norm(dim = -1).mean() 
             loss = loss_g
@@ -152,14 +158,15 @@ if __name__ == "__main__":
             
             dof_pos_new.data.clamp_(h1_fk.joints_range[:, 0, None], h1_fk.joints_range[:, 1, None])
             
-        dof_pos_new.data.clamp_(h1_fk.joints_range[:, 0, None], h1_fk.joints_range[:, 1, None])
+        dof_pos_new.data.clamp_(h1_fk.joints_range[:, 0, None], h1_fk.joints_range[:, 1, None]) # 限制关节角度的范围
         pose_aa_h1_new = torch.cat([gt_root_rot[None, :, None], h1_rotation_axis * dof_pos_new, torch.zeros((1, N, 2, 3)).to(device)], axis = 2)
-        fk_return = h1_fk.fk_batch(pose_aa_h1_new, root_trans_offset[None, ])
+        fk_return = h1_fk.fk_batch(pose_aa_h1_new, root_trans_offset[None, ]) # 使用优化后的关节角度计算H1关节的位置
 
         root_trans_offset_dump = root_trans_offset.clone()
 
-        root_trans_offset_dump[..., 2] -= fk_return.global_translation[..., 2].min().item() - 0.08
+        root_trans_offset_dump[..., 2] -= fk_return.global_translation[..., 2].min().item() - 0.08 # 调节根关节高度，保证根关节的z坐标大于0.08
         
+        # 保存数据
         data_dump[data_key]={
                 "root_trans_offset": root_trans_offset_dump.squeeze().cpu().detach().numpy(),
                 "pose_aa": pose_aa_h1_new.squeeze().cpu().detach().numpy(),   
@@ -168,10 +175,10 @@ if __name__ == "__main__":
                 "fps": 30
                 }
         
-        print(f"dumping {data_key} for testing, remove the line if you want to process all data")
-        import ipdb; ipdb.set_trace()
-        joblib.dump(data_dump, "data/h1/test.pkl")
+        # print(f"dumping {data_key} for testing, remove the line if you want to process all data")
+        # import ipdb; ipdb.set_trace() #手动设置断点，进入调试模式，c是继续运行，p是打印变量
+        joblib.dump(data_dump, "data/h1/test.pkl") # 保存第一次重定向之后的数据，用于检查是否正确
     
         
-    import ipdb; ipdb.set_trace()
-    joblib.dump(data_dump, "data/h1/amass_all.pkl")
+    # import ipdb; ipdb.set_trace() #手动设置断点，进入调试模式，c是继续运行，p是打印变量
+    joblib.dump(data_dump, "data/h1/amass_all.pkl") # 保存所有重定向之后的数据

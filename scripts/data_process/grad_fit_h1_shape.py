@@ -39,7 +39,7 @@ h1_fk = Humanoid_Batch(extend_head=True) # load forward kinematics model
 h1_joint_names_augment = h1_joint_names + ["left_hand_link", "right_hand_link", "head_link"]
 h1_joint_pick = ['pelvis',  'left_hip_yaw_link', "left_knee_link", "left_ankle_link",  'right_hip_yaw_link', 'right_knee_link', 'right_ankle_link', "left_shoulder_roll_link", "left_elbow_link", "left_hand_link", "right_shoulder_roll_link", "right_elbow_link", "right_hand_link", "head_link"]
 smpl_joint_pick = ["Pelvis", "L_Hip",  "L_Knee", "L_Ankle",  "R_Hip", "R_Knee", "R_Ankle", "L_Shoulder", "L_Elbow", "L_Hand", "R_Shoulder", "R_Elbow", "R_Hand", "Head"]
-h1_joint_pick_idx = [ h1_joint_names_augment.index(j) for j in h1_joint_pick]
+h1_joint_pick_idx = [ h1_joint_names_augment.index(j) for j in h1_joint_pick] # 选择H1的14个关节
 smpl_joint_pick_idx = [SMPL_BONE_ORDER_NAMES.index(j) for j in smpl_joint_pick]
 
 
@@ -55,36 +55,36 @@ pose_aa_h1 = torch.cat([torch.zeros((1, 1, 3)), H1_ROTATION_AXIS * dof_pos[..., 
 root_trans = torch.zeros((1, 1, 3))    
 
 ###### prepare SMPL default pause for H1
-pose_aa_stand = np.zeros((1, 72))
-rotvec = sRot.from_quat([0.5, 0.5, 0.5, 0.5]).as_rotvec()
-pose_aa_stand[:, :3] = rotvec
+pose_aa_stand = np.zeros((1, 72)) # 24个关节，每个关节3个自由度
+rotvec = sRot.from_quat([0.5, 0.5, 0.5, 0.5]).as_rotvec() # 初始化一个四元数，表示绕y轴旋转45°
+pose_aa_stand[:, :3] = rotvec # 根关节旋转45度
 pose_aa_stand = pose_aa_stand.reshape(-1, 24, 3)
-pose_aa_stand[:, SMPL_BONE_ORDER_NAMES.index('L_Shoulder')] = sRot.from_euler("xyz", [0, 0, -np.pi/2],  degrees = False).as_rotvec()
+pose_aa_stand[:, SMPL_BONE_ORDER_NAMES.index('L_Shoulder')] = sRot.from_euler("xyz", [0, 0, -np.pi/2],  degrees = False).as_rotvec() # 左肩绕z轴旋转-90度
 pose_aa_stand[:, SMPL_BONE_ORDER_NAMES.index('R_Shoulder')] = sRot.from_euler("xyz", [0, 0, np.pi/2],  degrees = False).as_rotvec()
-pose_aa_stand[:, SMPL_BONE_ORDER_NAMES.index('L_Elbow')] = sRot.from_euler("xyz", [0, -np.pi/2, 0],  degrees = False).as_rotvec()
+pose_aa_stand[:, SMPL_BONE_ORDER_NAMES.index('L_Elbow')] = sRot.from_euler("xyz", [0, -np.pi/2, 0],  degrees = False).as_rotvec() # 左肘绕y轴旋转-90度
 pose_aa_stand[:, SMPL_BONE_ORDER_NAMES.index('R_Elbow')] = sRot.from_euler("xyz", [0, np.pi/2, 0],  degrees = False).as_rotvec()
 pose_aa_stand = torch.from_numpy(pose_aa_stand.reshape(-1, 72))
 
 smpl_parser_n = SMPL_Parser(model_path="data/smpl", gender="neutral")
 
-###### Shape fitting
+###### Shape fitting形状拟合
 trans = torch.zeros([1, 3])
 beta = torch.zeros([1, 10])
 verts, joints = smpl_parser_n.get_joints_verts(pose_aa_stand, beta , trans)
 offset = joints[:, 0] - trans
 root_trans_offset = trans + offset
 
-fk_return = h1_fk.fk_batch(pose_aa_h1[None, ], root_trans_offset[None, 0:1])
+fk_return = h1_fk.fk_batch(pose_aa_h1[None, ], root_trans_offset[None, 0:1]) # 使用H1的FK模型计算H1关节的位置
 
-shape_new = Variable(torch.zeros([1, 10]).to(device), requires_grad=True)
-scale = Variable(torch.ones([1]).to(device), requires_grad=True)
-optimizer_shape = torch.optim.Adam([shape_new, scale],lr=0.1)
+shape_new = Variable(torch.zeros([1, 10]).to(device), requires_grad=True) # 定义可训练的shape参数
+scale = Variable(torch.ones([1]).to(device), requires_grad=True) # 定义可训练的scale参数
+optimizer_shape = torch.optim.Adam([shape_new, scale],lr=0.1) # 定义优化器
 
-
+# 通过优化shape_new和scale来最小化对应的H1关节和SMPL关节之间的距离
 for iteration in range(1000):
-    verts, joints = smpl_parser_n.get_joints_verts(pose_aa_stand, shape_new, trans[0:1])
+    verts, joints = smpl_parser_n.get_joints_verts(pose_aa_stand, shape_new, trans[0:1]) # 根据输入的姿势、shape参数和trans参数计算SMPL模型的各个关节位置
     root_pos = joints[:, 0]
-    joints = (joints - joints[:, 0]) * scale + root_pos
+    joints = (joints - joints[:, 0]) * scale + root_pos # 首先将各个关节的位置减去根关节位置，使根关节处于原点，然后乘以scale进行缩放，最后再加上根关节位置
     diff = fk_return.global_translation_extend[:, :, h1_joint_pick_idx] - joints[:, smpl_joint_pick_idx]
     loss_g = diff.norm(dim = -1).mean() 
     loss = loss_g

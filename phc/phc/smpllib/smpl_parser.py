@@ -356,7 +356,7 @@ class SMPL_Parser(_SMPL):
         smpl_output = self.forward(
             betas=th_betas,
             transl=th_trans,
-            body_pose=pose[:, 3:],
+            body_pose=pose[:, 3:], # 因为前三个是根关节的全局旋转
             global_orient=pose[:, :3],
         )
         vertices = smpl_output.vertices

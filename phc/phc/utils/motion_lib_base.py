@@ -204,6 +204,7 @@ class MotionLibBase():
         total_len = 0.0
         self.num_joints = len(skeleton_trees[0].node_names)
         num_motion_to_load = len(skeleton_trees)
+        
 
         if random_sample:
             sample_idxes = torch.multinomial(self._sampling_prob, num_samples=num_motion_to_load, replacement=True).to(self._device)

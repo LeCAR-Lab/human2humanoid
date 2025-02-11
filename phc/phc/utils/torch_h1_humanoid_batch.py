@@ -73,9 +73,6 @@ class Humanoid_Batch:
         tree = ETree.parse(path)
         xml_doc_root = tree.getroot()
         xml_world_body = xml_doc_root.find("worldbody")
-        if xml_world_body is None:
-            raise ValueError("MJCF parsed incorrectly please verify it.")
-        # assume this is the root
         xml_body_root = xml_world_body.find("body")
         if xml_body_root is None:
             raise ValueError("MJCF parsed incorrectly please verify it.")
@@ -119,10 +116,30 @@ class Humanoid_Batch:
         }
 
         
-    def fk_batch(self, pose, trans, convert_to_mat=True, return_full = False, dt=1/30):
+    def fk_batch(self, pose, trans, convert_to_mat=True, return_full = False, dt=1/30): 
+        """
+        Forward kinematics for batch of poses and translations.
+        Args:
+            pose (torch.Tensor): (B, seq_len, J, 3, 3)
+            trans (torch.Tensor): (B, seq_len, 3)
+            convert_to_mat (bool): if True, convert pose to rotation matrix
+            return_full (bool): if True, return extended model with hands and head
+            dt (float): time step
+        Returns:
+            dict: with keys:
+                global_translation (torch.Tensor): (B, seq_len, J, 3)
+                global_rotation_mat (torch.Tensor): (B, seq_len, J, 3, 3)
+                global_rotation (torch.Tensor): (B, seq_len, J, 4)
+                global_translation_extend (torch.Tensor): (B, seq_len, J+2, 3)
+                global_rotation_mat_extend (torch.Tensor): (B, seq_len, J+2, 3, 3)
+                global_rotation_extend (torch.Tensor): (B, seq_len, J+2, 4)
+                global_root_velocity (torch.Tensor): (B, seq_len, 3)
+                global_angular_velocity (torch.Tensor): (B, seq_len, 3)
+                local_rotation (torch.Tensor): (B, seq_len, J, 4)
+        """.
         device, dtype = pose.device, pose.dtype
         pose_input = pose.clone()
-        B, seq_len = pose.shape[:2]
+        B, seq_len = pose.shape[:2] # 切片获取前两个元素的形状,sequence[start(默认是0):stop(不包含该索引):step(默认是1)]，即 batch 大小和序列长度
         pose = pose[..., :len(self._parents), :] # H1 fitted joints might have extra joints
         if self.extend_hand and self.extend_head and pose.shape[-2] == 22:
             pose = torch.cat([pose, torch.zeros(B, seq_len, 1, 3).to(device).type(dtype)], dim = -2) # adding hand and head joints
@@ -132,7 +149,7 @@ class Humanoid_Batch:
             pose_mat = tRot.quaternion_to_matrix(pose_quat)
         else:
             pose_mat = pose
-        if pose_mat.shape != 5:
+        if pose_mat.shape != 5: # 确保 pose_mat 的形状是 (B, seq_len, J, 3, 3)
             pose_mat = pose_mat.reshape(B, seq_len, -1, 3, 3)
         J = pose_mat.shape[2] - 1  # Exclude root
         
@@ -151,9 +168,9 @@ class Humanoid_Batch:
             return_dict.global_rotation_mat_extend = wbody_mat.clone()
             return_dict.global_rotation_extend = wbody_rot
             
-            wbody_pos = wbody_pos[..., :-self._remove_idx, :]
-            wbody_mat = wbody_mat[..., :-self._remove_idx, :, :]
-            wbody_rot = wbody_rot[..., :-self._remove_idx, :]
+            wbody_pos = wbody_pos[..., :-self._remove_idx, :] # 全部关节的位置，如果包含手和头，移除它们的数据
+            wbody_mat = wbody_mat[..., :-self._remove_idx, :, :] # 旋转矩阵
+            wbody_rot = wbody_rot[..., :-self._remove_idx, :] # 四元数
         
         return_dict.global_translation = wbody_pos
         return_dict.global_rotation_mat = wbody_mat
@@ -203,20 +220,36 @@ class Humanoid_Batch:
                 positions_world.append(root_positions)
                 rotations_world.append(root_rotations)
             else:
-                jpos = (torch.matmul(rotations_world[self._parents[i]][:, :, 0], expanded_offsets[:, :, i, :, None]).squeeze(-1) + positions_world[self._parents[i]])
-                rot_mat = torch.matmul(rotations_world[self._parents[i]], torch.matmul(self._local_rotation_mat[:,  (i):(i + 1)], rotations[:, :, (i - 1):i, :]))
+                jpos = (torch.matmul(rotations_world[self._parents[i]][:, :, 0], expanded_offsets[:, :, i, :, None]).squeeze(-1) + positions_world[self._parents[i]]) # 将当前关节的局部偏移量转换为世界坐标系下的位置，然后加上父关节的世界坐标位置，最后得到当前关节的世界坐标位置
+                rot_mat = torch.matmul(rotations_world[self._parents[i]], torch.matmul(self._local_rotation_mat[:,  (i):(i + 1)], rotations[:, :, (i - 1):i, :])) # 将当前关节的旋转角度首先与当前关节的局部旋转矩阵相乘，然后再与父关节的旋转矩阵相乘，得到当前关节的最终的世界旋转矩阵
                 # rot_mat = torch.matmul(rotations_world[self._parents[i]], rotations[:, :, (i - 1):i, :])
                 # print(rotations[:, :, (i - 1):i, :].shape, self._local_rotation_mat.shape)
                 
                 positions_world.append(jpos)
                 rotations_world.append(rot_mat)
         
-        positions_world = torch.stack(positions_world, dim=2)
-        rotations_world = torch.cat(rotations_world, dim=2)
+        positions_world = torch.stack(positions_world, dim=2) # 堆叠所有关节的位置信息，在第二个维度上堆叠，从0开始计算,shape[1,1,23,3]
+        rotations_world = torch.cat(rotations_world, dim=2) # 在第二个维度上堆叠旋转信息，从0开始计算,shape[1,1,23,3,3]
         return positions_world, rotations_world
     
     @staticmethod
     def _compute_velocity(p, time_delta, guassian_filter=True):
+        """
+        计算速度向量
+        
+        Args:
+            p: 位置数据
+            time_delta: 时间间隔
+            guassian_filter: 是否应用高斯滤波，默认为True
+            
+        Returns:
+            速度向量
+            
+        Note:
+            该函数用于计算物体在连续时间点之间的速度变化率，
+            可选的高斯滤波用于平滑速度计算结果
+        """
+
         velocity = np.gradient(p.numpy(), axis=-3) / time_delta
         if guassian_filter:
             velocity = torch.from_numpy(filters.gaussian_filter1d(velocity, 2, axis=-3, mode="nearest")).to(p)
@@ -227,6 +260,18 @@ class Humanoid_Batch:
     
     @staticmethod
     def _compute_angular_velocity(r, time_delta: float, guassian_filter=True):
+        """
+        计算角速度
+        
+        Args:
+            r: 旋转矩阵或四元数表示的姿态变化
+            time_delta (float): 时间间隔
+            guassian_filter (bool, optional): 是否应用高斯滤波，默认为True
+            
+        Returns:
+            角速度向量 (弧度/秒)
+        """
+
         # assume the second last dimension is the time axis
         diff_quat_data = pRot.quat_identity_like(r).to(r)
         diff_quat_data[..., :-1, :, :] = pRot.quat_mul_norm(r[..., 1:, :, :], pRot.quat_inverse(r[..., :-1, :, :]))

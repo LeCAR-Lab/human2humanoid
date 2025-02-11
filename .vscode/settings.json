@@ -1,0 +1,6 @@
+{
+    "codingcopilot.enableCompletionLanguage": {
+        "scminput": false,
+        "python": true
+    }
+}
