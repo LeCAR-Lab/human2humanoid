@@ -310,7 +310,8 @@ class LeggedRobot(BaseTask):
     def post_physics_step(self):
         """ check terminations, compute observations and rewards
             calls self._post_physics_step_callback() for common computations 
-            calls self._draw_debug_vis() if needed
+            calls self._draw_debug_vis()bvfdevrrndvetti
+            if needed
         """
         self.gym.refresh_actor_root_state_tensor(self.sim)
         self.gym.refresh_net_contact_force_tensor(self.sim)
@@ -332,7 +333,7 @@ class LeggedRobot(BaseTask):
         self.base_ang_vel[:] = quat_rotate_inverse(self._rigid_body_rot[:, 11, :], self._rigid_body_ang_vel[:, 11, :])
         
 
-        self.projected_gravity[:] = quat_rotate_inverse(self._rigid_body_rot[:, 11, :], self.gravity_vec)
+        self.projected_gravity[:] = quat_rotate_inverse(self._rigid_body_rot[:, 11, :], self.clear)
 
         self._post_physics_step_callback()
         # compute observations, rewards, resets, ...
