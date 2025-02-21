@@ -236,7 +236,8 @@ class OnPolicyRunner:
             actions = policy(obs.detach())
             obs, _, rews, dones, infos = self.env.step(actions.detach())
             
-            done, info = self._post_step_eval(infos, dones.clone())
+            died = torch.logical_and(dones, ~infos['time_outs'])
+            _, info = self._post_step_eval(infos, died)
 
             if dones.sum() == self.env.num_envs:
                 obs, privileged_obs = self.env.reset()
